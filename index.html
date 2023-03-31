@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru-ru" lang="ru-ru" dir="ltr" >
+  <head>
+    <title>Pleer</title>
+    <link href="https://vjs.zencdn.net/6.4.0/video-js.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://vjs.zencdn.net/6.4.0/video.js"></script>
+
+
+  	<style>
+/* video container */
+.videoContainer {
+  max-width: 300px;
+  position: relative;
+  margin: 20px auto 0;
+}
+.advertisement{
+  position:absolute;
+    color: rgb(230, 200, 98);
+    padding: 5px 10px;
+    text-align: right;
+    background: rgba(0, 0, 0, 0.4);
+    bottom: 50px;
+    right:0;
+    font-size: 14px;
+    font-weight: 700;
+    z-index: 1 !important;
+}
+.hide{
+  display:none;
+}
+    </style>
+  </head>
+
+  <body>
+<div class="videoContainer">
+<!-- Add some extra attribute as video-url and mimetype which we can later play once we are done playing ads  -->
+  <video id="video_1" class="video-js playads" height="200px" width="300px" video-url="http://vjs.zencdn.net/v/oceans.mp4" mimetype="video/mp4" controls controlsList="nodownload" preload="none" data-setup=''>
+<!-- ad source ad ad video url   -->
+  <source src="http://techslides.com/demos/sample-videos/small.mp4" type='video/mp4' />
+</video>
+<!-- text to be displayed while playing ad   -->
+  <div class="moveToVideoJs">
+    <div class="advertisement hide">Advertisement</div>
+  </div>
+</div>
+
+
+
+<script>
+$(document).ready(function(){
+    var videotag = $('.playads');
+    var myPlayer = videojs('video_1');
+  $(".moveToVideoJs").appendTo($('#video_1'));
+    // show advertisement label while play advertisement
+    myPlayer.on('play', function() {
+        if(myPlayer.hasClass("playads")){
+          $('.advertisement').removeClass('hide');
+      }
+    });
+    // Stop from seeking while playing advertisement
+    myPlayer.on("seeking", function(event) {
+          if (currentTime < myPlayer.currentTime() && myPlayer.hasClass("playads")) {
+            myPlayer.currentTime(currentTime);
+          }
+      });
+      myPlayer.on("seeked", function(event) {
+          if (currentTime < myPlayer.currentTime() && myPlayer.hasClass("playads")) {
+            myPlayer.currentTime(currentTime);
+          }
+      });
+      setInterval(function() {
+          if (!myPlayer.paused() && myPlayer.hasClass("playads")) {
+            currentTime = myPlayer.currentTime();
+          }
+      }, 1000);
+    
+    // Hide Advertisement label and change data-src of player to play actual video
+    myPlayer.on('ended', function() {
+        if(this.hasClass("playads")){
+          this.src({type: videotag.attr('mimetype'), src: videotag.attr('video-url')});
+          this.play();
+          this.removeClass('playads');
+          $('.advertisement').addClass('hide');
+      }
+    });
+});
+</script>
+
+  </body>
+</html>
